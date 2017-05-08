@@ -136,8 +136,8 @@ func (setup *BaseSetupImpl) GetDeployPath() string {
 // InstallAndInstantiateExampleCC ..
 func (setup *BaseSetupImpl) InstallAndInstantiateExampleCC() error {
 
-	chainCodePath := "github.com/example_cc"
-	chainCodeVersion := "v0"
+	chainCodePath := "github.com/artchain"
+	chainCodeVersion := "v1.0"
 
 	if setup.ChainCodeID == "" {
 		setup.ChainCodeID = fcUtil.GenerateRandomID()

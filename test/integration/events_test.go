@@ -45,11 +45,11 @@ func TestEvents(t *testing.T) {
 	testSetup.ChainCodeID = fcUtil.GenerateRandomID()
 
 	// Install and Instantiate Events CC
-	if err := testSetup.InstallCC(testSetup.ChainCodeID, "github.com/events_cc", "v0", nil); err != nil {
+	if err := testSetup.InstallCC(testSetup.ChainCodeID, "github.com/events_cc", "v1.0", nil); err != nil {
 		t.Fatalf("installCC return error: %v", err)
 	}
 
-	if err := testSetup.InstantiateCC(testSetup.ChainCodeID, testSetup.ChainID, "github.com/events_cc", "v0", nil); err != nil {
+	if err := testSetup.InstantiateCC(testSetup.ChainCodeID, testSetup.ChainID, "github.com/events_cc", "v1.0", nil); err != nil {
 		t.Fatalf("instantiateCC return error: %v", err)
 	}
 

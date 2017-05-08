@@ -33,7 +33,7 @@ import (
 )
 
 var chainCodeName = "install"
-var chainCodePath = "github.com/example_cc"
+var chainCodePath = "github.com/artchain"
 
 var testSetup BaseSetupImpl
 
@@ -85,7 +85,7 @@ func TestChaincodeInstallUsingChaincodePackage(t *testing.T) {
 		t.Fatalf("PackageCC return error: %s", err)
 	}
 
-	err = testSetup.InstallCC("install", "github.com/example_cc_pkg", chainCodeVersion, chaincodePackage)
+	err = testSetup.InstallCC("install", "github.com/artchain_pkg", chainCodeVersion, chaincodePackage)
 	if err != nil {
 		t.Fatalf("installCC return error: %v", err)
 	}
@@ -120,5 +120,5 @@ func TestMain(m *testing.M) {
 
 func getRandomCCVersion() string {
 	rand.Seed(time.Now().UnixNano())
-	return "v0" + strconv.Itoa(rand.Intn(10000000))
+	return "v1.0" + strconv.Itoa(rand.Intn(10000000))
 }
