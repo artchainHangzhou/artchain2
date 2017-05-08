@@ -171,8 +171,8 @@ func (setup *BaseSetupImpl) QueryAsset() (string, error) {
 
 	var args []string
 	args = append(args, "invoke")
-	args = append(args, "query")
-	args = append(args, "b")
+	args = append(args, "queryOrg")
+	args = append(args, "org001")
 	return setup.Query(setup.ChainID, setup.ChainCodeID, args)
 }
 
@@ -181,9 +181,7 @@ func (setup *BaseSetupImpl) MoveFunds() (string, error) {
 
 	var args []string
 	args = append(args, "invoke")
-	args = append(args, "move")
-	args = append(args, "a")
-	args = append(args, "b")
+	args = append(args, "apply")
 	args = append(args, "1")
 
 	transientDataMap := make(map[string][]byte)
