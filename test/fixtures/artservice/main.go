@@ -44,9 +44,14 @@ func OutputJson(w http.ResponseWriter, code int, reason string, data interface{}
 
 func main() {
     http.HandleFunc("/InstallAndInstantiate", InstallAndInstantiate)
-    http.HandleFunc("/QueryOrg", QueryOrg)
-    http.HandleFunc("/queryUser", queryUser)
-    http.HandleFunc("/queryUserList", queryUserList)
+    http.HandleFunc("/queryOrg", QueryOrg)
+    http.HandleFunc("/queryUser", QueryUser)
+    http.HandleFunc("/queryUserList", QueryUserList)
+    http.HandleFunc("/queryIPList", QueryIPList)
+
+    http.HandleFunc("/apply", Apply)
+    http.HandleFunc("/use", Use)
+    http.HandleFunc("/sell", Sell)
 
     err := http.ListenAndServe(":12345", nil)
     if err != nil {

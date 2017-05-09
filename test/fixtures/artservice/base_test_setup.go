@@ -176,13 +176,8 @@ func (setup *BaseSetupImpl) QueryAsset() (string, error) {
 	return setup.Query(setup.ChainID, setup.ChainCodeID, args)
 }
 
-// MoveFunds ...
-func (setup *BaseSetupImpl) MoveFunds() (string, error) {
-
-	var args []string
-	args = append(args, "invoke")
-	args = append(args, "apply")
-	args = append(args, "1")
+// Invoke...
+func (setup *BaseSetupImpl) Invoke(args []string) (string, error) {
 
 	transientDataMap := make(map[string][]byte)
 	transientDataMap["result"] = []byte("Transient data in move funds...")
@@ -206,8 +201,8 @@ func (setup *BaseSetupImpl) MoveFunds() (string, error) {
 	case <-time.After(time.Second * 30):
 		return "", fmt.Errorf("invoke Didn't receive block event for txid(%s)", txID)
 	}
-	return txID, nil
 
+	return txID, nil
 }
 
 // getEventHub initilizes the event hub

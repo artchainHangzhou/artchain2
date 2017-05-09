@@ -4,7 +4,7 @@ import (
     "net/http"
 )
 
-func QueryUserList(w http.ResponseWriter, r *http.Request) {
+func QueryIPList(w http.ResponseWriter, r *http.Request) {
     if r.Method != "POST" {
         OutputJson(w, -1, "requset method is not post", nil)
         return
@@ -12,7 +12,7 @@ func QueryUserList(w http.ResponseWriter, r *http.Request) {
 
 	var args []string
 	args = append(args, "invoke")
-	args = append(args, "queryUserList")
+	args = append(args, "queryIPList")
 	args = append(args, "list")
 
 	value, err := base.Query(base.ChainID, base.ChainCodeID, args)
@@ -21,6 +21,6 @@ func QueryUserList(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	OutputJson(w, 0, "QueryUserList ok", value)
+	OutputJson(w, 0, "queryIPList ok", value)
 }
 

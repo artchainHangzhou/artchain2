@@ -6,11 +6,11 @@ import (
     "encoding/json"
 )
 
-type ReqQueryUser struct {
-    UserId string `json:"userId"`
+type ReqUse struct {
+    IPId string `json:"ipId"`
 }
 
-func QueryUser(w http.ResponseWriter, r *http.Request) {
+func Use(w http.ResponseWriter, r *http.Request) {
     if r.Method != "POST" {
         OutputJson(w, -1, "requset method is not post", nil)
         return
@@ -18,29 +18,29 @@ func QueryUser(w http.ResponseWriter, r *http.Request) {
 
     body, _ := ioutil.ReadAll(r.Body)
 
-    var req ReqQueryUser
+    var req ReqUse
     err := json.Unmarshal(body, &req)
     if err != nil {
         OutputJson(w, -1, err.Error(), nil)
         return
     }
 
-    if req.UserId == "" {
-        OutputJson(w, -1, "UserId is null", nil)
+    if req.IPId == "" {
+        OutputJson(w, -1, "IPId is null", nil)
         return
     }
 	
 	var args []string
 	args = append(args, "invoke")
-	args = append(args, "queryUser")
-	args = append(args, req.UserId)
+	args = append(args, "use")
+	args = append(args, req.IPId)
 
-	value, err := base.Query(base.ChainID, base.ChainCodeID, args)
+	value, err := base.Invoke(args)
 	if err != nil {
 		OutputJson(w, 0, err.Error(), nil)
 		return
 	}
 
-	OutputJson(w, 0, "QueryUser ok", value)
+	OutputJson(w, 0, "Use ok", value)
 }
 
