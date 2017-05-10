@@ -2,7 +2,6 @@ package main
 
 import (
     "bytes"
-    "encoding/hex"
     "encoding/json"
     "errors"
     "fmt"
@@ -27,7 +26,7 @@ type User struct {
     DocType    string `json:"docType"`
     UserId     string `json:"userId"`
     UserName   string `json:"userName"`
-    Coin       int64  `json:"coin,string"`
+    Coin       int64  `json:"coin"`
     Version    string `json:"version"`
     CreateTime string `json:"createTime"`
     UpdateTime string `json:"updateTime"`
@@ -53,7 +52,7 @@ type Org struct {
     DocType    string `json:"docType"`
     OrgId      string `json:"orgId"`
     OrgName    string `json:"orgName"`
-    Coin       int64  `json:"coin,string"`
+    Coin       int64  `json:"coin"`
     Version    string `json:"version"`
     CreateTime string `json:"createTime"`
     UpdateTime string `json:"updateTime"`
@@ -86,7 +85,7 @@ type IP struct {
     PictureUrl    string `json:"pictureUrl"`
     SubId         string `json:"subId"`
     Owner         string `json:"owner"`
-    Price         int64  `json:"Price,string"`
+    Price         int64  `json:"Price"`
     State         string `json:"state"` // 1-在售 2-已售 3-可用 4-消耗
     Version       string `json:"version"`
     CreateTime    string `json:"createTime"`
@@ -109,24 +108,15 @@ func (ip *IP) PutIP(stub shim.ChaincodeStubInterface) error {
     return nil
 }
 
-type ReqApply struct {
-    UserId      string `json:"userId"`
-    IPName      string `json:"ipName"`
-    Author      string `json:"author"`
-    Description string `json:"description"`
-    ProposalUrl string `json:"proposalUrl"`
-    PictureUrl  string `json:"pictureUrl"`
-    Price       int64  `json:"price,string"`
-    Total       int    `json:"total"`
-}
-
 type Transaction struct {
     DocType    string `json:"docType"`
     TxId       string `json:"txId"`
     IPName     string `json:"ipName"`
     IPId       string `json:"ipId"`
     SubId      string `json:"subId"`
-    Price      int64  `json:"price,string"`
+    From       string `json:"from"`
+    To         string `json:"to"`
+    Price      int64  `json:"price"`
     Version    string `json:"version"`
     CreateTime string `json:"createTime"`
     UpdateTime string `json:"updateTime"`
@@ -238,7 +228,7 @@ func (t *SimpleChaincode) Invoke(stub shim.ChaincodeStubInterface) pb.Response {
     */
 
     if args[0] == "apply" {
-        return t.apply(stub, args[1])
+        return t.apply(stub, args)
     } else if args[0] == "buy" {
         return t.buy(stub, args)
     } else if args[0] == "use" {
@@ -259,7 +249,10 @@ func (t *SimpleChaincode) Invoke(stub shim.ChaincodeStubInterface) pb.Response {
         return t.queryUserIPList(stub, args[1])
     } else if args[0] == "queryTransaction" {
         return t.queryTransaction(stub, args[1])
+    } else if args[0] == "queryUserTransaction" {
+        return t.queryUserTransaction(stub, args[1])
     }
+
 
     return shim.Error("Unknown action, check the first argument:" + args[0])
 }
@@ -280,7 +273,7 @@ func (t *SimpleChaincode) queryUserList(stub shim.ChaincodeStubInterface, args s
 func (t *SimpleChaincode) queryUserIPList(stub shim.ChaincodeStubInterface, args string) pb.Response {
     fmt.Println(args)
 
-    queryString := fmt.Sprintf("{\"selector\":{\"docType\":\"IP\", \"Owner\":\"args\"}}")
+    queryString := fmt.Sprintf("{\"selector\":{\"docType\":\"IP\", \"owner\":\"%s\"}}", args)
     queryResults, err := getQueryResultForQueryString(stub, queryString)
     if err != nil {
         fmt.Println("queryUser getQueryResultForQueryString fail:", err.Error())
@@ -349,21 +342,45 @@ func (t *SimpleChaincode) queryTransaction(stub shim.ChaincodeStubInterface, arg
     return shim.Success(queryResults)
 }
 
-func (t *SimpleChaincode) apply(stub shim.ChaincodeStubInterface, args string) pb.Response {
+func (t *SimpleChaincode) queryUserTransaction(stub shim.ChaincodeStubInterface, args string) pb.Response {
     fmt.Println(args)
 
-    body, err := hex.DecodeString(args)
+    queryString := fmt.Sprintf("{\"selector\":{\"docType\":\"Transaction\", \"$or\": [{\"from\":\"%s\"},{\"to\":\"%s\"}]}}", args, args)
+    queryResults, err := getQueryResultForQueryString(stub, queryString)
     if err != nil {
-        fmt.Println("apply DecodeString fail:" + err.Error())
-        return shim.Error("apply DecodeString fail:" + err.Error())
+        fmt.Println("queryUser getQueryResultForQueryString fail:", err.Error())
+        return shim.Error(err.Error())
     }
-fmt.Println("0")
-    var req ReqApply
-    err = json.Unmarshal(body, &req)
+
+    return shim.Success(queryResults)
+}
+
+func (t *SimpleChaincode) apply(stub shim.ChaincodeStubInterface, args[] string) pb.Response {
+    fmt.Println(args)
+
+    var reqIP IP
+    reqIP.Owner = args[1]
+    reqIP.IPName = args[2]
+    reqIP.Author = args[3]
+    reqIP.Description = args[4]
+    reqIP.ProposalUrl = args[5]
+    reqIP.PictureUrl  = args[6]
+
+    var err error
+    reqIP.Price, err = strconv.ParseInt(args[7], 10, 64)
     if err != nil {
-        fmt.Println("apply Unmarshal fail:" + err.Error())
-        return shim.Error("apply Unmarshal fail:" + err.Error())
+        fmt.Println("apply ParseInt total fail:", err.Error())
+        return shim.Error(err.Error())
     }
+
+    total, err := strconv.Atoi(args[8])
+    if err != nil {
+        fmt.Println("apply atoi total fail:", err.Error())
+        return shim.Error(err.Error())
+    }
+
+
+    /*
 
 fmt.Println("1")
     queryString := fmt.Sprintf("{\"selector\":{\"docType\":\"Org\"}}")
@@ -415,20 +432,20 @@ fmt.Println("4")
         org.Coin += 1
         org.PutOrg(stub)
     }
+    */
 
-    fmt.Println(req)
-    for i := 1; i <= req.Total; i++ {
+    for i := 1; i <= total; i++ {
         ip := &IP{
             DocType:     "IP",
             IPId:        time.Now().In(loc).Format(data) + fmt.Sprintf("%06d", i),
-            IPName:      req.IPName,
-            Author:      req.Author,
-            Description: req.Description,
-            ProposalUrl: req.ProposalUrl,
-            PictureUrl:  req.PictureUrl,
-            SubId:       strconv.Itoa(i) + "/" + strconv.Itoa(req.Total),
-            Owner:       req.UserId,
-            Price:       req.Price,
+            IPName:      reqIP.IPName,
+            Author:      reqIP.Author,
+            Description: reqIP.Description,
+            ProposalUrl: reqIP.ProposalUrl,
+            PictureUrl:  reqIP.PictureUrl,
+            SubId:       strconv.Itoa(i) + "/" + strconv.Itoa(total),
+            Owner:       reqIP.Owner,
+            Price:       reqIP.Price,
             State:       "1",
             Version:     "v1.0.0",
             CreateTime:  time.Now().In(loc).Format(layout),
@@ -440,8 +457,6 @@ fmt.Println("4")
             fmt.Println("apply PutIP fail:" + err.Error())
             return shim.Error("apply PutIP fail:" + err.Error())
         }
-        //user.IPList = append(user.IPList, ip.IPId)
-        //user.IPDetails = append(user.IPDetails, ip)
     }
 
     return shim.Success(nil)
@@ -473,7 +488,7 @@ func (t *SimpleChaincode) buy(stub shim.ChaincodeStubInterface, args []string) p
         return shim.Error("user coin is to low:" + strconv.FormatInt(touser.Coin, 10))
     }
 
-    ip, err := t.GetIP(stub, "IP:" + args[1])
+    ip, err := t.GetIP(stub, "IP:" + args[2])
     if err != nil {
         fmt.Println("GetState IP:", err.Error())
         return shim.Error("GetState IP:" + err.Error())

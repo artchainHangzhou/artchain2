@@ -50,11 +50,14 @@ func main() {
     http.HandleFunc("/queryUserIPList", QueryUserIPList)
     http.HandleFunc("/queryIPList", QueryIPList)
     http.HandleFunc("/queryTransaction", QueryTransaction)
+    http.HandleFunc("/queryUserTransaction", QueryUserTransaction)
 
     http.HandleFunc("/apply", Apply)
     http.HandleFunc("/buy", Buy)
     http.HandleFunc("/use", Use)
     http.HandleFunc("/sell", Sell)
+
+    http.HandleFunc("/upload", UpLoad)
 
     err := http.ListenAndServe(":12345", nil)
     if err != nil {

@@ -1,22 +1,9 @@
 package main
 
 import (
-	"encoding/hex"
-	"encoding/json"
-	"io/ioutil"
 	"net/http"
+    "strconv"
 )
-
-type ReqApply struct {
-	UserId      string `json:"userId"`
-	IPName      string `json:"ipName"`
-	Author      string `json:"author"`
-	Description string `json:"description"`
-	ProposalUrl string `json:"proposalUrl"`
-	PictureUrl  string `json:"pictureUrl"`
-	Price       int64  `json:"price, string"`
-	Total       int    `json:"total"`
-}
 
 func Apply(w http.ResponseWriter, r *http.Request) {
     if origin := r.Header.Get("Origin"); origin != "" {
@@ -30,25 +17,47 @@ func Apply(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	body, _ := ioutil.ReadAll(r.Body)
+	if r.PostFormValue("userId") == "" || r.PostFormValue("ipName") == "" || r.PostFormValue("author") == "" || 
+        r.PostFormValue("description") == "" || r.PostFormValue("proposalUrl") == "" || r.PostFormValue("pictureUrl") == "" || 
+        r.PostFormValue("price") == "" || r.PostFormValue("total") == "" {
+		OutputJson(w, -1, "request is null", nil)
+		return
+	}
 
-	var req ReqApply
-	err := json.Unmarshal(body, &req)
-	if err != nil {
+    price, err := strconv.Atoi(r.PostFormValue("price"))
+    if err != nil {
 		OutputJson(w, -1, err.Error(), nil)
 		return
-	}
+    }
 
-	if req.UserId == "" || req.IPName == "" || req.Author == "" || req.Description == "" ||
-		req.ProposalUrl == "" || req.PictureUrl == "" || req.Price < 0 || req.Total < 0 {
-		OutputJson(w, -1, "UserId is null", nil)
+    if price <= 0 {
+		OutputJson(w, -1, "price is to low", nil)
 		return
-	}
+    }
+
+    total, err := strconv.Atoi(r.PostFormValue("price"))
+    if err != nil {
+		OutputJson(w, -1, err.Error(), nil)
+		return
+    }
+
+    if total <= 0 {
+		OutputJson(w, -1, "total is to low", nil)
+		return
+    }
+
 
 	var args []string
 	args = append(args, "invoke")
 	args = append(args, "apply")
-	args = append(args, hex.EncodeToString(body))
+	args = append(args, r.PostFormValue("userId"))
+	args = append(args, r.PostFormValue("ipName"))
+	args = append(args, r.PostFormValue("author"))
+	args = append(args, r.PostFormValue("description"))
+	args = append(args, r.PostFormValue("proposalUrl"))
+	args = append(args, r.PostFormValue("pictureUrl"))
+	args = append(args, r.PostFormValue("price"))
+	args = append(args, r.PostFormValue("total"))
 
 	value, err := base.Invoke(args)
 	if err != nil {

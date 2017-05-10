@@ -2,13 +2,7 @@ package main
 
 import (
     "net/http"
-    "io/ioutil"
-    "encoding/json"
 )
-
-type ReqQueryUserIP struct {
-    UserId string `json:"userId"`
-}
 
 func QueryUserIPList(w http.ResponseWriter, r *http.Request) {
     if origin := r.Header.Get("Origin"); origin != "" {
@@ -22,16 +16,8 @@ func QueryUserIPList(w http.ResponseWriter, r *http.Request) {
         return
     }
 
-    body, _ := ioutil.ReadAll(r.Body)
 
-    var req ReqQueryUserIP
-    err := json.Unmarshal(body, &req)
-    if err != nil {
-        OutputJson(w, -1, err.Error(), nil)
-        return
-    }
-
-    if req.UserId == "" {
+    if r.PostFormValue("userId") == "" {
         OutputJson(w, -1, "UserId is null", nil)
         return
     }
@@ -40,7 +26,7 @@ func QueryUserIPList(w http.ResponseWriter, r *http.Request) {
 	var args []string
 	args = append(args, "invoke")
 	args = append(args, "queryUserIPList")
-	args = append(args, req.UserId)
+	args = append(args, r.PostFormValue("userId"))
 
 	value, err := base.Query(base.ChainID, base.ChainCodeID, args)
 	if err != nil {
