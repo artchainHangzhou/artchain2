@@ -6,11 +6,12 @@ import (
     "encoding/json"
 )
 
-type ReqSell struct {
+type ReqBuy struct {
+    UserId string `json:"userId"`
     IPId string `json:"ipId"`
 }
 
-func Sell(w http.ResponseWriter, r *http.Request) {
+func Buy(w http.ResponseWriter, r *http.Request) {
     if origin := r.Header.Get("Origin"); origin != "" {
         w.Header().Set("Access-Control-Allow-Origin", "*")
         w.Header().Set("Access-Control-Allow-Methods", "POST,GET,OPTIONS,PUT,DELETE")
@@ -24,7 +25,7 @@ func Sell(w http.ResponseWriter, r *http.Request) {
 
     body, _ := ioutil.ReadAll(r.Body)
 
-    var req ReqSell
+    var req ReqBuy
     err := json.Unmarshal(body, &req)
     if err != nil {
         OutputJson(w, -1, err.Error(), nil)
@@ -38,7 +39,8 @@ func Sell(w http.ResponseWriter, r *http.Request) {
 	
 	var args []string
 	args = append(args, "invoke")
-	args = append(args, "sell")
+	args = append(args, "buy")
+	args = append(args, req.UserId)
 	args = append(args, req.IPId)
 
 	value, err := base.Invoke(args)
@@ -47,6 +49,6 @@ func Sell(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	OutputJson(w, 0, "Sell ok", value)
+	OutputJson(w, 0, "Buy ok", value)
 }
 

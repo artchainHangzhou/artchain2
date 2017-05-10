@@ -2,30 +2,21 @@ package main
 
 import (
     "net/http"
-    "io/ioutil"
-    "encoding/json"
 )
 
-type ReqQueryOrg struct {
-    OrgId string `json:"orgId"`
-}
-
 func QueryOrg(w http.ResponseWriter, r *http.Request) {
+    if origin := r.Header.Get("Origin"); origin != "" {
+        w.Header().Set("Access-Control-Allow-Origin", "*")
+        w.Header().Set("Access-Control-Allow-Methods", "POST,GET,OPTIONS,PUT,DELETE")
+        w.Header().Set("Access-Control-Allow-Headers", "Action, Module")
+    }
+
     if r.Method != "POST" {
         OutputJson(w, -1, "requset method is not post", nil)
         return
     }
 
-    body, _ := ioutil.ReadAll(r.Body)
-
-    var req ReqQueryOrg
-    err := json.Unmarshal(body, &req)
-    if err != nil {
-        OutputJson(w, -1, err.Error(), nil)
-        return
-    }
-
-    if req.OrgId == "" {
+    if r.PostFormValue("orgId") == "" {
         OutputJson(w, -1, "OrgId is null", nil)
         return
     }
@@ -33,7 +24,7 @@ func QueryOrg(w http.ResponseWriter, r *http.Request) {
 	var args []string
 	args = append(args, "invoke")
 	args = append(args, "queryOrg")
-	args = append(args, req.OrgId)
+    args = append(args, r.PostFormValue("orgId"))
 
 	value, err := base.Query(base.ChainID, base.ChainCodeID, args)
 	if err != nil {

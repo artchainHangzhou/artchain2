@@ -4,7 +4,7 @@ import (
     "net/http"
 )
 
-func QueryUser(w http.ResponseWriter, r *http.Request) {
+func QueryTransaction(w http.ResponseWriter, r *http.Request) {
     if origin := r.Header.Get("Origin"); origin != "" {
         w.Header().Set("Access-Control-Allow-Origin", "*")
         w.Header().Set("Access-Control-Allow-Methods", "POST,GET,OPTIONS,PUT,DELETE")
@@ -16,15 +16,10 @@ func QueryUser(w http.ResponseWriter, r *http.Request) {
         return
     }
 
-    if r.PostFormValue("userId") == "" {
-        OutputJson(w, -1, "UserId is null", nil)
-        return
-    }
-	
 	var args []string
 	args = append(args, "invoke")
-	args = append(args, "queryUser")
-    args = append(args, r.PostFormValue("userId"))
+	args = append(args, "queryTransaction")
+	args = append(args, "list")
 
 	value, err := base.Query(base.ChainID, base.ChainCodeID, args)
 	if err != nil {
@@ -32,6 +27,6 @@ func QueryUser(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	OutputJson(w, 0, "QueryUser ok", value)
+	OutputJson(w, 0, "QueryTransaction ok", value)
 }
 

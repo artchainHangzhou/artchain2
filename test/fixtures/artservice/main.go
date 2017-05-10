@@ -47,9 +47,12 @@ func main() {
     http.HandleFunc("/queryOrg", QueryOrg)
     http.HandleFunc("/queryUser", QueryUser)
     http.HandleFunc("/queryUserList", QueryUserList)
+    http.HandleFunc("/queryUserIPList", QueryUserIPList)
     http.HandleFunc("/queryIPList", QueryIPList)
+    http.HandleFunc("/queryTransaction", QueryTransaction)
 
     http.HandleFunc("/apply", Apply)
+    http.HandleFunc("/buy", Buy)
     http.HandleFunc("/use", Use)
     http.HandleFunc("/sell", Sell)
 
