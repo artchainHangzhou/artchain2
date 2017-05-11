@@ -3,10 +3,10 @@ package main
 import (
     "bytes"
     "encoding/json"
-    "errors"
     "fmt"
     "strconv"
     "time"
+    "errors"
 
     "github.com/hyperledger/fabric/core/chaincode/shim"
     pb "github.com/hyperledger/fabric/protos/peer"
@@ -86,7 +86,7 @@ type IP struct {
     SubId         string `json:"subId"`
     Owner         string `json:"owner"`
     Price         int64  `json:"Price"`
-    State         string `json:"state"` // 1-在售 2-已售 3-可用 4-消耗
+    State         string `json:"state"` // 1-在售 2-持有 3-消耗
     Version       string `json:"version"`
     CreateTime    string `json:"createTime"`
     UpdateTime    string `json:"updateTime"`
@@ -153,7 +153,7 @@ func (t *SimpleChaincode) Init(stub shim.ChaincodeStubInterface) pb.Response {
         DocType:    "Org",
         OrgId:      "org001",
         OrgName:    "Art",
-        Coin:       100000000,
+        Coin:       1000000,
         Version:    "v1.0.0",
         CreateTime: time.Now().In(loc).Format(layout),
         UpdateTime: time.Now().In(loc).Format(layout),
@@ -167,7 +167,7 @@ func (t *SimpleChaincode) Init(stub shim.ChaincodeStubInterface) pb.Response {
         DocType:    "Org",
         OrgId:      "org002",
         OrgName:    "Artorg2",
-        Coin:       100000000,
+        Coin:       1000000,
         Version:    "v1.0.0",
         CreateTime: time.Now().In(loc).Format(layout),
         UpdateTime: time.Now().In(loc).Format(layout),
@@ -182,7 +182,7 @@ func (t *SimpleChaincode) Init(stub shim.ChaincodeStubInterface) pb.Response {
         DocType:    "User",
         UserId:     "test001",
         UserName:   "测试1",
-        Coin:       100000,
+        Coin:       10000,
         Version:    "v1.0.0",
         CreateTime: time.Now().In(loc).Format(layout),
         UpdateTime: time.Now().In(loc).Format(layout),
@@ -510,6 +510,7 @@ func (t *SimpleChaincode) buy(stub shim.ChaincodeStubInterface, args []string) p
     fromuser.Coin += ip.Price
     fromuser.PutUser(stub)
     ip.Owner = touser.UserId
+    ip.State = "2"
     ip.PutIP(stub)
 
     /*
@@ -692,9 +693,14 @@ func (t *SimpleChaincode) GetUser(stub shim.ChaincodeStubInterface, key string) 
         fmt.Println("queryUser GetState fail:", err.Error())
         return nil, err
     }
+
+    if string(userBytes) == "" {
+        fmt.Println("no key:", key)
+        return nil, errors.New("no key:" + key)
+    }
+
     err = json.Unmarshal(userBytes, &user)
     if err != nil {
-        fmt.Println(string(userBytes))
         fmt.Println("queryUser Unmarshal fail:", err.Error())
         return nil, err
     }

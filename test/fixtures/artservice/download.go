@@ -2,9 +2,11 @@ package main
 
 import (
     "net/http"
-	"fmt"
     "os"
+    "fmt"
     "io"
+    "net/url"
+    "path"
 )
 
 func DownLoad(w http.ResponseWriter, r *http.Request) {
@@ -19,37 +21,28 @@ func DownLoad(w http.ResponseWriter, r *http.Request) {
         return
     }
 
-	r.ParseMultipartForm(32 << 20)
-	file, handler, err := r.FormFile("uploadfile")
-	if err != nil {
-		fmt.Println(err)
-		OutputJson(w, 0, err.Error(), nil)
-		return
-	}
+    fmt.Println(r.URL.Path)
+    fileName := path.Base(r.URL.Path)
+    fmt.Println(fileName)
 
-	defer file.Close()
-	fmt.Fprintf(w, "%v", handler.Header)
 
-    var f *os.File
-    if _, err = os.Stat("./file/" + handler.Filename); os.IsNotExist(err) {
-        f, err = os.Create("./file/" + handler.Filename)
-        if err != nil {
-            fmt.Println(err)
-            OutputJson(w, 0, err.Error(), nil)
-            return
-        }
-    } else {
-	    f, err = os.OpenFile("./file/" + handler.Filename, os.O_WRONLY|os.O_CREATE, 0666)
-        if err != nil {
-            fmt.Println(err)
-            OutputJson(w, 0, err.Error(), nil)
-            return
-        }
+    file, err := os.Open("./file/" + fileName)  
+    if err != nil {  
+        OutputJson(w, -1, err.Error(), nil)
+        return  
+    } 
+
+    defer file.Close()  
+    fileName = url.QueryEscape(fileName) // 防止中文乱码  
+    w.Header().Set("Content-Type", "application/octet-stream")  
+    w.Header().Set("content-disposition", "attachment; filename=\""+fileName+"\"")  
+
+    _, error := io.Copy(w, file)  
+    if error != nil {
+        OutputJson(w, -1, err.Error(), nil)
+        return  
     }
 
-	defer f.Close()
-	io.Copy(f, file)
-
-	OutputJson(w, 0, "DownLoad ok", handler.Filename)
+	OutputJson(w, 0, "DownLoad ok", fileName)
 }
 

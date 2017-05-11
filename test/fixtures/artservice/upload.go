@@ -30,16 +30,18 @@ func UpLoad(w http.ResponseWriter, r *http.Request) {
 	defer file.Close()
 	fmt.Fprintf(w, "%v", handler.Header)
 
+    fullfilename := "/file/" + handler.Filename
+
     var f *os.File
-    if _, err = os.Stat("./file/" + handler.Filename); os.IsNotExist(err) {
-        f, err = os.Create("./file/" + handler.Filename)
+    if _, err = os.Stat("." + fullfilename); os.IsNotExist(err) {
+        f, err = os.Create("." + fullfilename)
         if err != nil {
             fmt.Println(err)
             OutputJson(w, 0, err.Error(), nil)
             return
         }
     } else {
-	    f, err = os.OpenFile("./file/" + handler.Filename, os.O_WRONLY|os.O_CREATE, 0666)
+	    f, err = os.OpenFile("." + fullfilename, os.O_WRONLY|os.O_CREATE, 0666)
         if err != nil {
             fmt.Println(err)
             OutputJson(w, 0, err.Error(), nil)
@@ -50,6 +52,6 @@ func UpLoad(w http.ResponseWriter, r *http.Request) {
 	defer f.Close()
 	io.Copy(f, file)
 
-	OutputJson(w, 0, "UpLoad ok", handler.Filename)
+	OutputJson(w, 0, "UpLoad ok", "/download" + fullfilename)
 }
 
