@@ -5,7 +5,6 @@ import (
     "os"
     "fmt"
     "io"
-    "net/url"
     "path"
 )
 
@@ -25,7 +24,6 @@ func DownLoad(w http.ResponseWriter, r *http.Request) {
     fileName := path.Base(r.URL.Path)
     fmt.Println(fileName)
 
-
     file, err := os.Open("./file/" + fileName)  
     if err != nil {  
         OutputJson(w, -1, err.Error(), nil)
@@ -33,12 +31,12 @@ func DownLoad(w http.ResponseWriter, r *http.Request) {
     } 
 
     defer file.Close()  
-    fileName = url.QueryEscape(fileName) // 防止中文乱码  
-    w.Header().Set("Content-Type", "application/octet-stream")  
-    w.Header().Set("content-disposition", "attachment; filename=\""+fileName+"\"")  
+    //fileName = url.QueryEscape(fileName) // 防止中文乱码  
+    //w.Header().Set("Content-Type", "application/octet-stream")  
+    //w.Header().Set("content-disposition", "attachment; filename=\""+fileName+"\"")  
 
-    _, error := io.Copy(w, file)  
-    if error != nil {
+    _, err = io.Copy(w, file)  
+    if err != nil {
         OutputJson(w, -1, err.Error(), nil)
         return  
     }

@@ -23,13 +23,11 @@ func UpLoad(w http.ResponseWriter, r *http.Request) {
 	file, handler, err := r.FormFile("uploadfile")
 	if err != nil {
 		fmt.Println(err)
-		OutputJson(w, 0, err.Error(), nil)
+		OutputJson(w, -1, err.Error(), nil)
 		return
 	}
 
 	defer file.Close()
-	fmt.Fprintf(w, "%v", handler.Header)
-
     fullfilename := "/file/" + handler.Filename
 
     var f *os.File
@@ -37,14 +35,14 @@ func UpLoad(w http.ResponseWriter, r *http.Request) {
         f, err = os.Create("." + fullfilename)
         if err != nil {
             fmt.Println(err)
-            OutputJson(w, 0, err.Error(), nil)
+            OutputJson(w, -1, err.Error(), nil)
             return
         }
     } else {
 	    f, err = os.OpenFile("." + fullfilename, os.O_WRONLY|os.O_CREATE, 0666)
         if err != nil {
             fmt.Println(err)
-            OutputJson(w, 0, err.Error(), nil)
+            OutputJson(w, -1, err.Error(), nil)
             return
         }
     }

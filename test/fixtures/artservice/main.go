@@ -1,41 +1,48 @@
 package main
 
 import (
-    "fmt"
-    "net/http"
-    "log"
-	"os"
     "encoding/json"
+    "fmt"
+    "log"
+    "net/http"
+    "os"
 )
 
 var base BaseSetupImpl
 
 type Result struct {
-	Code int `json:"code"`
-	Message string`json:"message"`
-	//Data []byte`json:"data"`
-	Data interface{}`json:"data"`
+    Code    int    `json:"code"`
+    Message string `json:"message"`
+    //Data []byte`json:"data"`
+    Data interface{} `json:"data"`
 }
 
 func init() {
-	base = BaseSetupImpl{
-		ConfigFile:      "../config/config_test.yaml",
-		ChainID:         "testchannel",
-		ChannelConfig:   "../channel/testchannel.tx",
-		ConnectEventHub: true,
-	}
+    base = BaseSetupImpl{
+        ConfigFile:      "../config/config_test.yaml",
+        ChainID:         "testchannel",
+        ChannelConfig:   "../channel/testchannel.tx",
+        ConnectEventHub: true,
+    }
 
-	if err := base.Initialize(); err != nil {
-		fmt.Printf("Initialize: %v", err)
-		os.Exit(-1)
-	}
+    if err := base.Initialize(); err != nil {
+        fmt.Printf("Initialize: %v", err)
+        os.Exit(-1)
+    }
+
+    fmt.Println("InstallAndInstantiateArtChainCodeCC ing ...")
+    if err := base.InstallAndInstantiateExampleCC("github.com/artchain", "v1.0"); err != nil {
+        fmt.Printf("InstallAndInstantiateArtChainCodeCC: %v", err)
+        os.Exit(-1)
+    }
+    fmt.Println("InstallAndInstantiateExampleCC succ!")
 }
 
 func OutputJson(w http.ResponseWriter, code int, reason string, data interface{}) {
     out := &Result{code, reason, data}
     b, err := json.Marshal(out)
     if err != nil {
-		fmt.Println("OutputJson fail:" + err.Error())
+        fmt.Println("OutputJson fail:" + err.Error())
         return
     }
 

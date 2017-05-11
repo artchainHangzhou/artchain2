@@ -28,7 +28,7 @@ func QueryOrg(w http.ResponseWriter, r *http.Request) {
 
 	value, err := base.Query(base.ChainID, base.ChainCodeID, args)
 	if err != nil {
-		OutputJson(w, 0, err.Error(), nil)
+		OutputJson(w, -1, err.Error(), nil)
 		return
 	}
 

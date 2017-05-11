@@ -194,8 +194,8 @@ func (t *SimpleChaincode) Init(stub shim.ChaincodeStubInterface) pb.Response {
 
     user1 := &User{
         DocType:    "User",
-        UserId:     "atest001",
-        UserName:   "测试1",
+        UserId:     "test002",
+        UserName:   "测试2",
         Coin:       10000,
         Version:    "v1.0.0",
         CreateTime: time.Now().In(loc).Format(layout),
