@@ -7,7 +7,7 @@ import (
     "io"
 )
 
-func UpLoad(w http.ResponseWriter, r *http.Request) {
+func DownLoad(w http.ResponseWriter, r *http.Request) {
     if origin := r.Header.Get("Origin"); origin != "" {
         w.Header().Set("Access-Control-Allow-Origin", "*")
         w.Header().Set("Access-Control-Allow-Methods", "POST,GET,OPTIONS,PUT,DELETE")
@@ -50,6 +50,6 @@ func UpLoad(w http.ResponseWriter, r *http.Request) {
 	defer f.Close()
 	io.Copy(f, file)
 
-	OutputJson(w, 0, "UpLoad ok", handler.Filename)
+	OutputJson(w, 0, "DownLoad ok", handler.Filename)
 }
 

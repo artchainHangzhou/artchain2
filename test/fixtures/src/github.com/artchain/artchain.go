@@ -464,6 +464,7 @@ fmt.Println("4")
 
 func (t *SimpleChaincode) buy(stub shim.ChaincodeStubInterface, args []string) pb.Response {
     fmt.Println(args)
+    /*
     queryString := fmt.Sprintf("{\"selector\":{\"docType\":\"Org\"}}")
     queryResults, err := getQueryResultList(stub, queryString)
     if err != nil {
@@ -476,6 +477,7 @@ func (t *SimpleChaincode) buy(stub shim.ChaincodeStubInterface, args []string) p
         fmt.Println("orgnum is :", strconv.Itoa(orgnum))
         return shim.Error("orgnum is :" + strconv.Itoa(orgnum))
     }
+    */
 
     touser, err := t.GetUser(stub, "User:" + args[1])
     if err != nil {
@@ -483,10 +485,12 @@ func (t *SimpleChaincode) buy(stub shim.ChaincodeStubInterface, args []string) p
         return shim.Error("GetState User:" + err.Error())
     }
 
+    /*
     if touser.Coin < int64(orgnum) {
         fmt.Println("user coin is to low:", strconv.FormatInt(touser.Coin, 10))
         return shim.Error("user coin is to low:" + strconv.FormatInt(touser.Coin, 10))
     }
+    */
 
     ip, err := t.GetIP(stub, "IP:" + args[2])
     if err != nil {
@@ -500,13 +504,15 @@ func (t *SimpleChaincode) buy(stub shim.ChaincodeStubInterface, args []string) p
         return shim.Error("GetState User:" + err.Error())
     }
 
-    touser.Coin -= (int64(orgnum) + ip.Price)
+    //touser.Coin -= (int64(orgnum) + ip.Price)
+    touser.Coin -= ip.Price
     touser.PutUser(stub)
     fromuser.Coin += ip.Price
     fromuser.PutUser(stub)
     ip.Owner = touser.UserId
     ip.PutIP(stub)
 
+    /*
     var org Org
     for _, orgbytes := range queryResults {
         err = json.Unmarshal(orgbytes, &org)
@@ -522,6 +528,7 @@ func (t *SimpleChaincode) buy(stub shim.ChaincodeStubInterface, args []string) p
             return shim.Error("Apply PutOrg fail:" + err.Error())
         }
     }
+    */
 
     tx := &Transaction{
         DocType: "Transaction",
@@ -529,6 +536,8 @@ func (t *SimpleChaincode) buy(stub shim.ChaincodeStubInterface, args []string) p
         IPName:  ip.IPName,
         IPId:    ip.IPId,
         SubId:   ip.SubId,
+        From: fromuser.UserId,
+        To: touser.UserId,
         Price:   ip.Price,
         Version: "v1.0.0",
         CreateTime: time.Now().In(loc).Format(layout),
@@ -685,6 +694,7 @@ func (t *SimpleChaincode) GetUser(stub shim.ChaincodeStubInterface, key string) 
     }
     err = json.Unmarshal(userBytes, &user)
     if err != nil {
+        fmt.Println(string(userBytes))
         fmt.Println("queryUser Unmarshal fail:", err.Error())
         return nil, err
     }

@@ -58,6 +58,7 @@ func main() {
     http.HandleFunc("/sell", Sell)
 
     http.HandleFunc("/upload", UpLoad)
+    http.HandleFunc("/download", DownLoad)
 
     err := http.ListenAndServe(":12345", nil)
     if err != nil {
