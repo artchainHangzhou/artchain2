@@ -394,7 +394,7 @@ func (t *SimpleChaincode) apply(stub shim.ChaincodeStubInterface, args[] string)
         return shim.Error(err.Error())
     }
 
-    userbytes, err := t.GetState(stub, "User:" + req.Owner)
+    userbytes, err := t.GetState(stub, "User:" + reqIP.Owner)
     if err != nil {
         fmt.Println("GetState User:", err.Error())
         return shim.Error("GetState User:" + err.Error())
@@ -407,12 +407,12 @@ func (t *SimpleChaincode) apply(stub shim.ChaincodeStubInterface, args[] string)
         return shim.Error("Apply Unmarshal fail:" + err.Error())
     }
 
-    if user.Coin < FeeAmt {
+    if user.Coin < int64(FeeAmt) {
         fmt.Println("user coin is too low:", strconv.FormatInt(user.Coin, 10))
         return shim.Error("user coin is too low:" + strconv.FormatInt(user.Coin, 10))
     }
 
-    user.Coin -= FeeAmt
+    user.Coin -= int64(FeeAmt)
     err = user.PutUser(stub)
     if err != nil {
         fmt.Println("Apply PutUser fail:", err.Error())
@@ -432,7 +432,7 @@ func (t *SimpleChaincode) apply(stub shim.ChaincodeStubInterface, args[] string)
         return shim.Error("Apply Unmarshal fail:" + err.Error())
     }
 
-    org.Coin += FeeAmt
+    org.Coin += int64(FeeAmt)
     err = org.PutOrg(stub)
     if err != nil {
         fmt.Println("Apply PutOrg fail:", err.Error())
@@ -488,12 +488,12 @@ func (t *SimpleChaincode) buy(stub shim.ChaincodeStubInterface, args []string) p
         return shim.Error("buy GetUser:" + err.Error())
     }
 
-    if buyers.Coin < FeeAmt + ip.Price {
-        fmt.Println("user coin is too low:", strconv.FormatInt(touser.Coin, 10))
-        return shim.Error("user coin is too low:" + strconv.FormatInt(touser.Coin, 10))
+    if buyers.Coin < int64(FeeAmt) + int64(ip.Price) {
+        fmt.Println("user coin is too low:", strconv.FormatInt(buyers.Coin, 10))
+        return shim.Error("user coin is too low:" + strconv.FormatInt(buyers.Coin, 10))
     }
 
-    buyers.Coin -= FeeAmt
+    buyers.Coin -= int64(FeeAmt)
     buyers.Coin -= ip.Price
     err = buyers.PutUser(stub)
     if err != nil {
@@ -530,7 +530,7 @@ func (t *SimpleChaincode) buy(stub shim.ChaincodeStubInterface, args []string) p
         return shim.Error("Apply Unmarshal fail:" + err.Error())
     }
 
-    org.Coin += FeeAmt
+    org.Coin += int64(FeeAmt)
     err = org.PutOrg(stub)
     if err != nil {
         fmt.Println("Apply PutOrg fail:", err.Error())
