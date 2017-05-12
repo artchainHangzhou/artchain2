@@ -36,7 +36,7 @@
           <span>单价</span><input type="text" name="" v-model="tradefrom.price">
         </div>
          <el-upload class='wenjian'
-            action="http://47.52.91.37:12345/upload"
+            :action='imgurl+"upload"'
             type="drag"
             :thumbnail-mode="false"
             name="uploadfile"
@@ -49,7 +49,7 @@
             <div class="el-dragger__text">将律师意见书拖到此处，或<em>点击上传</em></div>
         </el-upload>
         <el-upload class="imgs"
-            action="http://47.52.91.37:12345/upload"
+            :action='imgurl+"upload"'
             type="drag"
             :thumbnail-mode="false"
             name="uploadfile"
@@ -76,6 +76,7 @@ import api from '../api/config'
   // name: 'hello',
     data () {
       return {
+        imgurl:'',
         userName:'',
         userType:'',
         wenjian:1,
@@ -95,6 +96,7 @@ import api from '../api/config'
     },
     mounted: function() {
       this.$nextTick(() => {
+        this.imgurl=api.curl;
         this.userName=sessionStorage.userName;
         this.userType=sessionStorage.userType;
       })

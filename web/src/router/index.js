@@ -3,7 +3,6 @@ import Router from 'vue-router'
 
 Vue.use(Router)
 
-import Hello from 'components/Hello'
 import Index from 'views/index'
 import ifcont from 'views/userconten'
 import tradefrom from 'views/tradefrom'

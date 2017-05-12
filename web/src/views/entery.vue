@@ -261,7 +261,7 @@ import api from '../api/config'
         }
         .twothtd{
           width: 900px;
-          text-align: left;
+          text-align: left!important;
         }
       }
     }

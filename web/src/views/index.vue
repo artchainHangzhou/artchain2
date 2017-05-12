@@ -62,7 +62,7 @@
         <div class="conteninput">
           <input type="text" name="" v-model="signInParam.userId" placeholder="请输入用户名">
           <input type="text" name="" v-model="signInParam.email" placeholder="请输入邮箱">
-          <input type="text" name="" placeholder="请输入密码">
+          <input type="password" name="" placeholder="请输入密码">
           <button @click="signIn()">注册</button>
         </div>
       </div>
@@ -73,7 +73,7 @@
         <div class="fromtitle"><span>登录</span></div>
         <div class="conteninput">
           <input type="text" name="" v-model="userId" placeholder="请输入用户名">
-          <input type="text" name="" placeholder="请输入密码">
+          <input type="password" name="" placeholder="请输入密码">
           <button @click="login()">登录</button>
           <p>还没有账户?<span class="clickclass" @click="godignIn()">点我注册</span></p>
         </div>
@@ -85,7 +85,7 @@
         <div class="fromtitle"><span>机构登录</span></div>
         <div class="conteninput">
           <input type="text" name="" v-model="orgId" placeholder="请输入用户名">
-          <input type="text" name="" placeholder="请输入密码">
+          <input type="password" name="" placeholder="请输入密码">
           <button @click="enterlogin()">登录</button>
           <!-- <p>还没有账户?<span class="clickclass">点我注册</span></p> -->
         </div>
