@@ -1,0 +1,1 @@
+nohup ./artservice > msg.log &
