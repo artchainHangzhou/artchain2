@@ -50,6 +50,7 @@ func UpLoad(w http.ResponseWriter, r *http.Request) {
 	defer f.Close()
 	io.Copy(f, file)
 
-	OutputJson(w, 0, "UpLoad ok", "/download" + fullfilename)
+	//OutputJson(w, 0, "UpLoad ok", "/download" + fullfilename)
+	OutputJson(w, 0, "UpLoad ok", handler.Filename)
 }
 

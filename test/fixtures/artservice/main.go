@@ -59,6 +59,7 @@ func main() {
     http.HandleFunc("/queryTransaction", QueryTransaction)
     http.HandleFunc("/queryUserTransaction", QueryUserTransaction)
 
+    http.HandleFunc("/signIn", SignIn)
     http.HandleFunc("/apply", Apply)
     http.HandleFunc("/buy", Buy)
     http.HandleFunc("/use", Use)

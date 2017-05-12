@@ -26,6 +26,7 @@ type User struct {
     DocType    string `json:"docType"`
     UserId     string `json:"userId"`
     UserName   string `json:"userName"`
+    Email      string `json:"email"`
     Coin       int64  `json:"coin"`
     Version    string `json:"version"`
     CreateTime string `json:"createTime"`
@@ -178,6 +179,7 @@ func (t *SimpleChaincode) Init(stub shim.ChaincodeStubInterface) pb.Response {
         return shim.Error("Unknown function call:" + err.Error())
     }
 
+/*
     user := &User{
         DocType:    "User",
         UserId:     "test001",
@@ -205,7 +207,7 @@ func (t *SimpleChaincode) Init(stub shim.ChaincodeStubInterface) pb.Response {
     if err != nil {
         return shim.Error("Init PutUser fail:" + err.Error())
     }
-
+*/
     return shim.Success(nil)
 }
 
@@ -227,34 +229,38 @@ func (t *SimpleChaincode) Invoke(stub shim.ChaincodeStubInterface) pb.Response {
        }
     */
 
-    if args[0] == "apply" {
+    switch args[0] {
+    case "signIn":
+        return t.signIn(stub, args)
+    case "apply":
         return t.apply(stub, args)
-    } else if args[0] == "buy" {
+    case "buy":
         return t.buy(stub, args)
-    } else if args[0] == "use" {
+/*
+    case "use":
         return t.use(stub, args[1])
-    } else if args[0] == "sell" {
+    case "sell":
         return t.sell(stub, args[1])
-    } else if args[0] == "recharge" {
+    case "recharge":
         return t.recharge(stub, args[1])
-    } else if args[0] == "queryUserList" {
+*/
+    case "queryUserList":
         return t.queryUserList(stub, args[1])
-    } else if args[0] == "queryIPList" {
+    case "queryIPList":
         return t.queryIPList(stub, args[1])
-    } else if args[0] == "queryUser" {
+    case "queryUser":
         return t.queryUser(stub, args[1])
-    } else if args[0] == "queryOrg" {
+    case "queryOrg":
         return t.queryOrg(stub, args[1])
-    } else if args[0] == "queryUserIPList" {
+    case "queryUserIPList":
         return t.queryUserIPList(stub, args[1])
-    } else if args[0] == "queryTransaction" {
+    case "queryTransaction":
         return t.queryTransaction(stub, args[1])
-    } else if args[0] == "queryUserTransaction" {
+    case "queryUserTransaction":
         return t.queryUserTransaction(stub, args[1])
+    default:
+        return shim.Error("Unknown action, check the first argument:" + args[0])
     }
-
-
-    return shim.Error("Unknown action, check the first argument:" + args[0])
 }
 
 func (t *SimpleChaincode) queryUserList(stub shim.ChaincodeStubInterface, args string) pb.Response {
@@ -353,6 +359,28 @@ func (t *SimpleChaincode) queryUserTransaction(stub shim.ChaincodeStubInterface,
     }
 
     return shim.Success(queryResults)
+}
+
+func (t *SimpleChaincode) signIn(stub shim.ChaincodeStubInterface, args []string) pb.Response {
+    fmt.Println(args)
+    
+    user := &User{
+        DocType:    "User",
+        UserId:     args[1],
+        UserName:   args[1],
+        Email:      args[2],
+        Coin:       1000,
+        Version:    "v1.0.0",
+        CreateTime: time.Now().In(loc).Format(layout),
+        UpdateTime: time.Now().In(loc).Format(layout),
+    }
+
+    err := user.PutUser(stub)
+    if err != nil {
+        return shim.Error("signIn PutUser fail:" + err.Error())
+    }
+
+    return shim.Success(nil)
 }
 
 func (t *SimpleChaincode) apply(stub shim.ChaincodeStubInterface, args[] string) pb.Response {
