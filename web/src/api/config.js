@@ -1,3 +1,3 @@
 module.exports = {
-  curl:'http://localhost:12345/',
+  curl:'http://47.52.77.226:12345/',
 }
