@@ -16,6 +16,8 @@ var (
     layout = "2006-01-02 15:04:05"
     data   = "20060102150405"
     loc    *time.Location
+    GOrgId  = "org001"
+    FeeAmt  = 1
 )
 
 func init() {
@@ -150,31 +152,16 @@ func (t *SimpleChaincode) Init(stub shim.ChaincodeStubInterface) pb.Response {
         fmt.Println("args:" + a)
     }
 
-    org1 := &Org{
+    org := &Org{
         DocType:    "Org",
-        OrgId:      "org001",
-        OrgName:    "Art",
+        OrgId:      GOrgId,
+        OrgName:    "交易机构",
         Coin:       1000000,
         Version:    "v1.0.0",
         CreateTime: time.Now().In(loc).Format(layout),
         UpdateTime: time.Now().In(loc).Format(layout),
     }
-    err := org1.PutOrg(stub)
-    if err != nil {
-        return shim.Error("Unknown function call:" + err.Error())
-    }
-
-    org2 := &Org{
-        DocType:    "Org",
-        OrgId:      "org002",
-        OrgName:    "Artorg2",
-        Coin:       1000000,
-        Version:    "v1.0.0",
-        CreateTime: time.Now().In(loc).Format(layout),
-        UpdateTime: time.Now().In(loc).Format(layout),
-    }
-
-    err = org2.PutOrg(stub)
+    err := org.PutOrg(stub)
     if err != nil {
         return shim.Error("Unknown function call:" + err.Error())
     }
@@ -407,30 +394,12 @@ func (t *SimpleChaincode) apply(stub shim.ChaincodeStubInterface, args[] string)
         return shim.Error(err.Error())
     }
 
-
-    /*
-
-fmt.Println("1")
-    queryString := fmt.Sprintf("{\"selector\":{\"docType\":\"Org\"}}")
-    queryResults, err := getQueryResultList(stub, queryString)
-    if err != nil {
-        fmt.Println("apply getQueryResultList fail:", err.Error())
-        return shim.Error(err.Error())
-    }
-
-    orgnum := len(queryResults)
-    if orgnum <= 0 {
-        fmt.Println("orgnum is :", strconv.Itoa(orgnum))
-        return shim.Error("orgnum is :" + strconv.Itoa(orgnum))
-    }
-
-    userbytes, err := t.GetState(stub, "User:" + req.UserId)
+    userbytes, err := t.GetState(stub, "User:" + req.Owner)
     if err != nil {
         fmt.Println("GetState User:", err.Error())
         return shim.Error("GetState User:" + err.Error())
     }
 
-fmt.Println("2")
     var user User
     err = json.Unmarshal(userbytes, &user)
     if err != nil {
@@ -438,29 +407,37 @@ fmt.Println("2")
         return shim.Error("Apply Unmarshal fail:" + err.Error())
     }
 
-fmt.Println("3")
-    if user.Coin < int64(orgnum) {
-        fmt.Println("user coin is to low:", strconv.FormatInt(user.Coin, 10))
-        return shim.Error("user coin is to low:" + strconv.FormatInt(user.Coin, 10))
+    if user.Coin < FeeAmt {
+        fmt.Println("user coin is too low:", strconv.FormatInt(user.Coin, 10))
+        return shim.Error("user coin is too low:" + strconv.FormatInt(user.Coin, 10))
     }
 
-    user.Coin -= int64(orgnum)
-    user.PutUser(stub)
+    user.Coin -= FeeAmt
+    err = user.PutUser(stub)
+    if err != nil {
+        fmt.Println("Apply PutUser fail:", err.Error())
+        return shim.Error("Apply PutUser fail:" + err.Error())
+    }
+
+    orgbytes, err := t.GetState(stub, "Org:" + GOrgId)
+    if err != nil {
+        fmt.Println("Apply GetState User:", err.Error())
+        return shim.Error("Apply GetState User:" + err.Error())
+    }
 
     var org Org
-    for _, orgbytes := range queryResults {
-        fmt.Println(string(orgbytes))
-        err = json.Unmarshal(orgbytes, &org)
-        if err != nil {
-            fmt.Println("Apply Unmarshal fail:", err.Error())
-            return shim.Error("Apply Unmarshal fail:" + err.Error())
-        }
-
-fmt.Println("4")
-        org.Coin += 1
-        org.PutOrg(stub)
+    err = json.Unmarshal(orgbytes, &org)
+    if err != nil {
+        fmt.Println("Apply Unmarshal fail:", err.Error())
+        return shim.Error("Apply Unmarshal fail:" + err.Error())
     }
-    */
+
+    org.Coin += FeeAmt
+    err = org.PutOrg(stub)
+    if err != nil {
+        fmt.Println("Apply PutOrg fail:", err.Error())
+        return shim.Error("Apply PutOrg fail:" + err.Error())
+    }
 
     for i := 1; i <= total; i++ {
         ip := &IP{
@@ -492,73 +469,73 @@ fmt.Println("4")
 
 func (t *SimpleChaincode) buy(stub shim.ChaincodeStubInterface, args []string) pb.Response {
     fmt.Println(args)
-    /*
-    queryString := fmt.Sprintf("{\"selector\":{\"docType\":\"Org\"}}")
-    queryResults, err := getQueryResultList(stub, queryString)
+
+    buyers, err := t.GetUser(stub, "User:" + args[1])
     if err != nil {
-        fmt.Println("apply getQueryResultList fail:", err.Error())
-        return shim.Error(err.Error())
+        fmt.Println("buy GetUser:", err.Error())
+        return shim.Error("buy GetUser:" + err.Error())
     }
-
-    orgnum := len(queryResults)
-    if orgnum <= 0 {
-        fmt.Println("orgnum is :", strconv.Itoa(orgnum))
-        return shim.Error("orgnum is :" + strconv.Itoa(orgnum))
-    }
-    */
-
-    touser, err := t.GetUser(stub, "User:" + args[1])
-    if err != nil {
-        fmt.Println("GetState User:", err.Error())
-        return shim.Error("GetState User:" + err.Error())
-    }
-
-    /*
-    if touser.Coin < int64(orgnum) {
-        fmt.Println("user coin is to low:", strconv.FormatInt(touser.Coin, 10))
-        return shim.Error("user coin is to low:" + strconv.FormatInt(touser.Coin, 10))
-    }
-    */
 
     ip, err := t.GetIP(stub, "IP:" + args[2])
     if err != nil {
-        fmt.Println("GetState IP:", err.Error())
-        return shim.Error("GetState IP:" + err.Error())
+        fmt.Println("buy GetIP:", err.Error())
+        return shim.Error("buy GetIP:" + err.Error())
     }
 
-    fromuser, err := t.GetUser(stub, "User:" + ip.Owner)
+    seller, err := t.GetUser(stub, "User:" + ip.Owner)
     if err != nil {
-        fmt.Println("GetState User:", err.Error())
-        return shim.Error("GetState User:" + err.Error())
+        fmt.Println("buy GetUser:", err.Error())
+        return shim.Error("buy GetUser:" + err.Error())
     }
 
-    //touser.Coin -= (int64(orgnum) + ip.Price)
-    touser.Coin -= ip.Price
-    touser.PutUser(stub)
-    fromuser.Coin += ip.Price
-    fromuser.PutUser(stub)
-    ip.Owner = touser.UserId
+    if buyers.Coin < FeeAmt + ip.Price {
+        fmt.Println("user coin is too low:", strconv.FormatInt(touser.Coin, 10))
+        return shim.Error("user coin is too low:" + strconv.FormatInt(touser.Coin, 10))
+    }
+
+    buyers.Coin -= FeeAmt
+    buyers.Coin -= ip.Price
+    err = buyers.PutUser(stub)
+    if err != nil {
+        fmt.Println("buy PutUser:", err.Error())
+        return shim.Error("buy PutUser:" + err.Error())
+    }
+
+    seller.Coin += ip.Price
+    err = seller.PutUser(stub)
+    if err != nil {
+        fmt.Println("buy PutUser:", err.Error())
+        return shim.Error("buy PutUser:" + err.Error())
+    }
+
+    ip.Owner = buyers.UserId
     ip.State = "2"
     ip.UpdateTime = time.Now().In(loc).Format(layout)
-    ip.PutIP(stub)
-
-    /*
-    var org Org
-    for _, orgbytes := range queryResults {
-        err = json.Unmarshal(orgbytes, &org)
-        if err != nil {
-            fmt.Println("Apply Unmarshal fail:", err.Error())
-            return shim.Error("Apply Unmarshal fail:" + err.Error())
-        }
-
-        org.Coin += 1
-        err = org.PutOrg(stub)
-        if err != nil {
-            fmt.Println("Apply PutOrg fail:", err.Error())
-            return shim.Error("Apply PutOrg fail:" + err.Error())
-        }
+    err = ip.PutIP(stub)
+    if err != nil {
+        fmt.Println("buy PutIP:", err.Error())
+        return shim.Error("buy PutIP:" + err.Error())
     }
-    */
+
+    orgbytes, err := t.GetState(stub, "Org:" + GOrgId)
+    if err != nil {
+        fmt.Println("Apply GetState User:", err.Error())
+        return shim.Error("Apply GetState User:" + err.Error())
+    }
+
+    var org Org
+    err = json.Unmarshal(orgbytes, &org)
+    if err != nil {
+        fmt.Println("Apply Unmarshal fail:", err.Error())
+        return shim.Error("Apply Unmarshal fail:" + err.Error())
+    }
+
+    org.Coin += FeeAmt
+    err = org.PutOrg(stub)
+    if err != nil {
+        fmt.Println("Apply PutOrg fail:", err.Error())
+        return shim.Error("Apply PutOrg fail:" + err.Error())
+    }
 
     tx := &Transaction{
         DocType: "Transaction",
@@ -566,8 +543,8 @@ func (t *SimpleChaincode) buy(stub shim.ChaincodeStubInterface, args []string) p
         IPName:  ip.IPName,
         IPId:    ip.IPId,
         SubId:   ip.SubId,
-        From: fromuser.UserId,
-        To: touser.UserId,
+        From:    seller.UserId,
+        To:      buyers.UserId,
         Price:   ip.Price,
         Version: "v1.0.0",
         CreateTime: time.Now().In(loc).Format(layout),
@@ -575,8 +552,8 @@ func (t *SimpleChaincode) buy(stub shim.ChaincodeStubInterface, args []string) p
     }
     err = tx.PutTransaction(stub)
     if err != nil {
-        fmt.Println("Apply PutOrg fail:", err.Error())
-        return shim.Error("Apply PutOrg fail:" + err.Error())
+        fmt.Println("Apply PutTransaction fail:", err.Error())
+        return shim.Error("Apply PutTransaction fail:" + err.Error())
     }
 
     return shim.Success(nil)
@@ -596,12 +573,12 @@ func (t *SimpleChaincode) use(stub shim.ChaincodeStubInterface, args string) pb.
         return shim.Error(err.Error())
     }
 
-    if ip.State != "3" {
+    if ip.State != "2" {
         fmt.Println("ip.State:" + ip.State)
         return shim.Error("ip.State:" + ip.State)
     }
 
-    ip.State = "4"
+    ip.State = "3"
     err = ip.PutIP(stub)
     if err != nil {
         fmt.Println("use PutIP fail:" + err.Error())
@@ -625,7 +602,7 @@ func (t *SimpleChaincode) sell(stub shim.ChaincodeStubInterface, args string) pb
         return shim.Error(err.Error())
     }
 
-    if ip.State != "3" {
+    if ip.State != "2" {
         fmt.Println("ip.State:" + ip.State)
         return shim.Error("ip.State:" + ip.State)
     }
