@@ -51,6 +51,16 @@ services:
         - ./tls/orderer:/etc/hyperledger/tls/orderer
         - ./tls/peers:/etc/hyperledger/tls/peers
 
+  couchdb0:
+    container_name: couchdb0
+    image: hyperledger/fabric-couchdb
+#   Uncomment the port mapping if you want to expose the CouchDB service,
+#   for example to utilize Fauxton User Interface in dev environments.
+    volumes:
+      - /var/hyperledger/couchdb0:/opt/couchdb/data 
+    ports:
+      - 5984:5984
+
   peer0:
     container_name: peer0
     image: hyperledger/fabric-peer
@@ -72,8 +82,10 @@ services:
       # the following setting starts chaincode containers on the same
       # bridge network as the peers
       # https://docs.docker.com/compose/networking/
-      - CORE_VM_DOCKER_HOSTCONFIG_NETWORKMODE=fixtures_default
+      - CORE_VM_DOCKER_HOSTCONFIG_NETWORKMODE=fabric_default
       - CORE_PEER_GOSSIP_SKIPHANDSHAKE=true
+      - CORE_LEDGER_STATE_STATEDATABASE=CouchDB
+      - CORE_LEDGER_STATE_COUCHDBCONFIG_COUCHDBADDRESS=couchdb0:5984
     working_dir: /opt/gopath/src/github.com/hyperledger/fabric
     command: peer node start --peer-defaultchain=false
     ports:
@@ -85,6 +97,17 @@ services:
         - ./tls/peers/peer0:/etc/hyperledger/tls
     depends_on:
       - orderer0
+      - couchdb0 
+  
+  couchdb1:
+    container_name: couchdb1
+    image: hyperledger/fabric-couchdb
+#   Uncomment the port mapping if you want to expose the CouchDB service,
+#   for example to utilize Fauxton User Interface in dev environments.
+    volumes:
+      - /var/hyperledger/couchdb1:/opt/couchdb/data 
+    ports:
+      - 6984:5984
 
   peer1:
     container_name: peer1
@@ -106,8 +129,10 @@ services:
       # the following setting starts chaincode containers on the same
       # bridge network as the peers
       # https://docs.docker.com/compose/networking/
-      - CORE_VM_DOCKER_HOSTCONFIG_NETWORKMODE=fixtures_default
+      - CORE_VM_DOCKER_HOSTCONFIG_NETWORKMODE=fabric_default
       - CORE_PEER_GOSSIP_SKIPHANDSHAKE=true
+      - CORE_LEDGER_STATE_STATEDATABASE=CouchDB
+      - CORE_LEDGER_STATE_COUCHDBCONFIG_COUCHDBADDRESS=couchdb1:5984
     working_dir: /opt/gopath/src/github.com/hyperledger/fabric
     command: peer node start --peer-defaultchain=false
     ports:
@@ -119,7 +144,18 @@ services:
         - ./tls/peers/peer1:/etc/hyperledger/tls
     depends_on:
       - orderer0
+      - couchdb1
       - peer0
+
+  couchdb2:
+    container_name: couchdb2
+    image: hyperledger/fabric-couchdb
+#   Uncomment the port mapping if you want to expose the CouchDB service,
+#   for example to utilize Fauxton User Interface in dev environments.
+    volumes:
+      - /var/hyperledger/couchdb2:/opt/couchdb/data 
+    ports:
+      - 7984:5984
 
   peer2:
     container_name: peer2
@@ -141,8 +177,10 @@ services:
       # the following setting starts chaincode containers on the same
       # bridge network as the peers
       # https://docs.docker.com/compose/networking/
-      - CORE_VM_DOCKER_HOSTCONFIG_NETWORKMODE=fixtures_default
+      - CORE_VM_DOCKER_HOSTCONFIG_NETWORKMODE=fabric_default
       - CORE_PEER_GOSSIP_SKIPHANDSHAKE=true
+      - CORE_LEDGER_STATE_STATEDATABASE=CouchDB
+      - CORE_LEDGER_STATE_COUCHDBCONFIG_COUCHDBADDRESS=couchdb2:5984
     working_dir: /opt/gopath/src/github.com/hyperledger/fabric
     command: peer node start --peer-defaultchain=false
     ports:
@@ -154,6 +192,17 @@ services:
         - ./tls/peers/peer2:/etc/hyperledger/tls
     depends_on:
       - orderer0
+      - couchdb2
+
+  couchdb3:
+    container_name: couchdb3
+    image: hyperledger/fabric-couchdb
+#   Uncomment the port mapping if you want to expose the CouchDB service,
+#   for example to utilize Fauxton User Interface in dev environments.
+    volumes:
+      - /var/hyperledger/couchdb3:/opt/couchdb/data 
+    ports:
+      - 8984:5984
 
   peer3:
     container_name: peer3
@@ -175,8 +224,10 @@ services:
       # the following setting starts chaincode containers on the same
       # bridge network as the peers
       # https://docs.docker.com/compose/networking/
-      - CORE_VM_DOCKER_HOSTCONFIG_NETWORKMODE=fixtures_default
+      - CORE_VM_DOCKER_HOSTCONFIG_NETWORKMODE=fabric_default
       - CORE_PEER_GOSSIP_SKIPHANDSHAKE=true
+      - CORE_LEDGER_STATE_STATEDATABASE=CouchDB
+      - CORE_LEDGER_STATE_COUCHDBCONFIG_COUCHDBADDRESS=couchdb3:5984
     working_dir: /opt/gopath/src/github.com/hyperledger/fabric
     command: peer node start --peer-defaultchain=false
     ports:
@@ -188,4 +239,5 @@ services:
         - ./tls/peers/peer3:/etc/hyperledger/tls
     depends_on:
       - orderer0
+      - couchdb3
       - peer2
