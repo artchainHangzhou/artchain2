@@ -540,6 +540,7 @@ func (t *SimpleChaincode) buy(stub shim.ChaincodeStubInterface, args []string) p
     ip.Owner = touser.UserId
     ip.State = "2"
     ip.PutIP(stub)
+    ip.UpdateTime = time.Now().In(loc).Format(layout)
 
     /*
     var org Org
