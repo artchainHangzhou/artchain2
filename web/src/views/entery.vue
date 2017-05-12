@@ -16,7 +16,7 @@
       </ul>
     </div>
     </header>
-    <div class="user-ssec"><span class="mymis">交易明细</span><span class="mycoin">我的余额 <b class="coincolor">{{coin}}</b></span></div>
+    <div class="user-ssec"><span class="mymis">交易明细</span><span class="mycoin">机构余额: <b class="coincolor">{{coin}}</b></span></div>
     <div class="table1">
       <table>
         <thead>

@@ -156,7 +156,7 @@ func (t *SimpleChaincode) Init(stub shim.ChaincodeStubInterface) pb.Response {
         DocType:    "Org",
         OrgId:      GOrgId,
         OrgName:    "交易机构",
-        Coin:       1000000,
+        Coin:       100000,
         Version:    "v1.0.0",
         CreateTime: time.Now().In(loc).Format(layout),
         UpdateTime: time.Now().In(loc).Format(layout),
@@ -350,19 +350,44 @@ func (t *SimpleChaincode) queryUserTransaction(stub shim.ChaincodeStubInterface,
 
 func (t *SimpleChaincode) signIn(stub shim.ChaincodeStubInterface, args []string) pb.Response {
     fmt.Println(args)
-    
+
+    orgbytes, err := t.GetState(stub, "Org:" + GOrgId)
+    if err != nil {
+        fmt.Println("Apply GetState User:", err.Error())
+        return shim.Error("Apply GetState User:" + err.Error())
+    }
+
+    var org Org
+    err = json.Unmarshal(orgbytes, &org)
+    if err != nil {
+        fmt.Println("Apply Unmarshal fail:", err.Error())
+        return shim.Error("Apply Unmarshal fail:" + err.Error())
+    }
+
+    amt := 1000
+    if org.Coin < int64(amt) {
+        fmt.Println("org coin is too low:", strconv.FormatInt(org.Coin, 10))
+        return shim.Error("org coin is too low:" + strconv.FormatInt(org.Coin, 10))
+    }
+    org.Coin -= int64(amt)
+    err = org.PutOrg(stub)
+    if err != nil {
+        fmt.Println("Apply PutOrg fail:", err.Error())
+        return shim.Error("Apply PutOrg fail:" + err.Error())
+    }
+
     user := &User{
         DocType:    "User",
         UserId:     args[1],
         UserName:   args[1],
         Email:      args[2],
-        Coin:       1000,
+        Coin:       int64(amt),
         Version:    "v1.0.0",
         CreateTime: time.Now().In(loc).Format(layout),
         UpdateTime: time.Now().In(loc).Format(layout),
     }
 
-    err := user.PutUser(stub)
+    err = user.PutUser(stub)
     if err != nil {
         return shim.Error("signIn PutUser fail:" + err.Error())
     }
