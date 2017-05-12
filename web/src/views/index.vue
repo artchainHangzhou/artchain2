@@ -319,6 +319,7 @@ export default {
           sessionStorage.setItem('userName',response.orgName);
           sessionStorage.setItem('userType','org');
           sessionStorage.setItem('userId',response.orgId);
+          sessionStorage.setItem('coin',response.coin);
          _this.$router.push({
           path: '/entery'
         });

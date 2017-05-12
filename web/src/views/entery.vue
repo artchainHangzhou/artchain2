@@ -16,7 +16,7 @@
       </ul>
     </div>
     </header>
-    <div class="user-ssec"><span class="mymis">交易明细</span></div>
+    <div class="user-ssec"><span class="mymis">交易明细</span><span class="mycoin">我的余额 <b class="coincolor">{{coin}}</b></span></div>
     <div class="table1">
       <table>
         <thead>
@@ -70,6 +70,7 @@ import api from '../api/config'
   // name: 'hello',
     data () {
       return {
+        coin:'0.00',
         userName:'',
         userList:[],
         caozuoList:[],
@@ -82,6 +83,7 @@ import api from '../api/config'
     mounted: function() {
       this.$nextTick(() => {
         this.userName=sessionStorage.userName;
+        this.coin=sessionStorage.coin;
         this.UserList();
         this.getmyhistoryList();
       })
@@ -93,6 +95,30 @@ import api from '../api/config'
           path: '/index'
         });
       },
+      enterlogin(){
+      var userid=this.orgId;
+      var _this=this;
+     $.ajax({
+      type:"POST",
+      url:api.curl+'queryOrg',
+      dataType:'json',
+      data:'orgId='+userid,
+      success:function(data){
+        if(data.code==0){
+          var response=JSON.parse(data.data);
+          _this.coin=response.coin;
+        }else{
+          _this.$notify.error({
+            title: '错误',
+            message: '登录失败'
+          });
+        }
+      },
+      error:function(){
+        console.log(1111)
+      }
+     });
+    },
       getpage3list(response){
         var start=(response-1)*this.pageSize3;
         var end=response*this.pageSize3;
@@ -213,6 +239,13 @@ import api from '../api/config'
       .mymis{
         color: #4778c7;
         padding-left: 20px;
+      }
+      .mycoin{
+        float: right;
+        padding-right: 20px;
+        .coincolor{
+          color: red;
+        }
       }
     }
     .table1{
