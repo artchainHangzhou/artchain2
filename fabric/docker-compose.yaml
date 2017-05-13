@@ -95,6 +95,7 @@ services:
         - /var/run/:/host/var/run/
         - ./channel/crypto-config/peerOrganizations/peerOrg1/peers/peerOrg1Peer1/:/etc/hyperledger/msp/peer
         - ./tls/peers/peer0:/etc/hyperledger/tls
+        - /var/hyperledger/peer0:/var/hyperledger/production
     depends_on:
       - orderer0
       - couchdb0 
@@ -142,6 +143,7 @@ services:
         - /var/run/:/host/var/run/
         - ./channel/crypto-config/peerOrganizations/peerOrg1/peers/peerOrg1Peer2/:/etc/hyperledger/msp/peer
         - ./tls/peers/peer1:/etc/hyperledger/tls
+        - /var/hyperledger/peer1:/var/hyperledger/production
     depends_on:
       - orderer0
       - couchdb1
@@ -190,6 +192,7 @@ services:
         - /var/run/:/host/var/run/
         - ./channel/crypto-config/peerOrganizations/peerOrg2/peers/peerOrg2Peer1/:/etc/hyperledger/msp/peer
         - ./tls/peers/peer2:/etc/hyperledger/tls
+        - /var/hyperledger/peer2:/var/hyperledger/production
     depends_on:
       - orderer0
       - couchdb2
@@ -237,6 +240,7 @@ services:
         - /var/run/:/host/var/run/
         - ./channel/crypto-config/peerOrganizations/peerOrg2/peers/peerOrg2Peer2/:/etc/hyperledger/msp/peer
         - ./tls/peers/peer3:/etc/hyperledger/tls
+        - /var/hyperledger/peer3:/var/hyperledger/production
     depends_on:
       - orderer0
       - couchdb3
