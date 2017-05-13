@@ -23,6 +23,9 @@ func init() {
         ChainID:         "testchannel",
         ChannelConfig:   "../test/fixtures/channel/testchannel.tx",
         ConnectEventHub: true,
+        ChainCodeID: "artchain",
+        AppraisalChainCodeID: "appraisal",
+        SearchChainCodeID: "search",
     }
 
     if err := base.Initialize(); err != nil {
@@ -30,12 +33,26 @@ func init() {
         os.Exit(-1)
     }
 
-    fmt.Println("InstallAndInstantiateArtChainCodeCC ing ...")
-    if err := base.InstallAndInstantiateExampleCC("github.com/artchain", "v1.0"); err != nil {
-        fmt.Printf("InstallAndInstantiateArtChainCodeCC: %v", err)
+    fmt.Println("InstallAndInstantiateArtChainCC ing ...")
+    if err := base.InstallAndInstantiateArtChainCC("github.com/artchain", "v1.0"); err != nil {
+        fmt.Printf("InstallAndInstantiateArtChainCC: %v", err)
         os.Exit(-1)
     }
-    fmt.Println("InstallAndInstantiateExampleCC succ!")
+    fmt.Println("InstallAndInstantiateArtChainCC succ!")
+
+    fmt.Println("InstallAndInstantiateAppraisalCC ing ...")
+    if err := base.InstallAndInstantiateAppraisalCC("github.com/appraisal", "v1.0"); err != nil {
+        fmt.Printf("InstallAndInstantiateAppraisalCC: %v", err)
+        os.Exit(-1)
+    }
+    fmt.Println("InstallAndInstantiateAppraisalCC succ!")
+
+    fmt.Println("InstallAndInstantiateSearchCC ing ...")
+    if err := base.InstallAndInstantiateSearchCC("github.com/search", "v1.0"); err != nil {
+        fmt.Printf("InstallAndInstantiateSearchCC: %v", err)
+        os.Exit(-1)
+    }
+    fmt.Println("InstallAndInstantiateSearchCC succ!")
 }
 
 func OutputJson(w http.ResponseWriter, code int, reason string, data interface{}) {
@@ -67,6 +84,8 @@ func main() {
 
     http.HandleFunc("/upload", UpLoad)
     http.HandleFunc("/download/", DownLoad)
+
+    http.HandleFunc("/search", Search)
 
     err := http.ListenAndServe(":12345", nil)
     if err != nil {

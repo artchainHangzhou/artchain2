@@ -31,7 +31,7 @@ func InstallAndInstantiate(w http.ResponseWriter, r *http.Request) {
         return
     }
 
-    if err = base.InstallAndInstantiateExampleCC(req.ChainCodePath, req.ChainCodeVersion); err != nil {
+    if err = base.InstallAndInstantiateArtChainCC(req.ChainCodePath, req.ChainCodeVersion); err != nil {
 	    OutputJson(w, -1, err.Error(), nil)
         return
     }

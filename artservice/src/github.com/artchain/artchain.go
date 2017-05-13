@@ -14,7 +14,7 @@ import (
 
 var (
     layout = "2006-01-02 15:04:05"
-    data   = "20060102150405"
+    date   = "20060102150405"
     loc    *time.Location
     GOrgId  = "org001"
     FeeAmt  = 1
@@ -89,6 +89,7 @@ type IP struct {
     SubId         string `json:"subId"`
     Owner         string `json:"owner"`
     Price         int64  `json:"Price"`
+    FileStyle     string `json:"fileStyle"`
     State         string `json:"state"` // 1-在售 2-持有 3-消耗
     Version       string `json:"version"`
     CreateTime    string `json:"createTime"`
@@ -245,6 +246,8 @@ func (t *SimpleChaincode) Invoke(stub shim.ChaincodeStubInterface) pb.Response {
         return t.queryTransaction(stub, args[1])
     case "queryUserTransaction":
         return t.queryUserTransaction(stub, args[1])
+    case "search":
+        return t.search(stub, args[1])
     default:
         return shim.Error("Unknown action, check the first argument:" + args[0])
     }
@@ -270,6 +273,19 @@ func (t *SimpleChaincode) queryUserIPList(stub shim.ChaincodeStubInterface, args
     queryResults, err := getQueryResultForQueryString(stub, queryString)
     if err != nil {
         fmt.Println("queryUser getQueryResultForQueryString fail:", err.Error())
+        return shim.Error(err.Error())
+    }
+
+    return shim.Success(queryResults)
+}
+
+func (t *SimpleChaincode) search(stub shim.ChaincodeStubInterface, args string) pb.Response {
+    fmt.Println(args)
+
+    queryString := fmt.Sprintf("{\"selector\":{\"docType\":\"IP\", \"fileStyle\":\"%s\"}}", args)
+    queryResults, err := getQueryResultForQueryString(stub, queryString)
+    if err != nil {
+        fmt.Println("search getQueryResultForQueryString fail:", err.Error())
         return shim.Error(err.Error())
     }
 
@@ -405,6 +421,7 @@ func (t *SimpleChaincode) apply(stub shim.ChaincodeStubInterface, args[] string)
     reqIP.Description = args[4]
     reqIP.ProposalUrl = args[5]
     reqIP.PictureUrl  = args[6]
+    reqIP.FileStyle   = args[9]
 
     var err error
     reqIP.Price, err = strconv.ParseInt(args[7], 10, 64)
@@ -467,7 +484,7 @@ func (t *SimpleChaincode) apply(stub shim.ChaincodeStubInterface, args[] string)
     for i := 1; i <= total; i++ {
         ip := &IP{
             DocType:     "IP",
-            IPId:        time.Now().In(loc).Format(data) + fmt.Sprintf("%06d", i),
+            IPId:        time.Now().In(loc).Format(date) + fmt.Sprintf("%06d", i),
             IPName:      reqIP.IPName,
             Author:      reqIP.Author,
             Description: reqIP.Description,
@@ -476,6 +493,7 @@ func (t *SimpleChaincode) apply(stub shim.ChaincodeStubInterface, args[] string)
             SubId:       strconv.Itoa(i) + "/" + strconv.Itoa(total),
             Owner:       reqIP.Owner,
             Price:       reqIP.Price,
+            FileStyle:   reqIP.FileStyle,
             State:       "1",
             Version:     "v1.0.0",
             CreateTime:  time.Now().In(loc).Format(layout),
@@ -564,7 +582,7 @@ func (t *SimpleChaincode) buy(stub shim.ChaincodeStubInterface, args []string) p
 
     tx := &Transaction{
         DocType: "Transaction",
-        TxId:    time.Now().In(loc).Format(data),
+        TxId:    time.Now().In(loc).Format(date),
         IPName:  ip.IPName,
         IPId:    ip.IPId,
         SubId:   ip.SubId,
