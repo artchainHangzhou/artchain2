@@ -64,8 +64,10 @@ func (t *SimpleChaincode) Invoke(stub shim.ChaincodeStubInterface) pb.Response {
 	fmt.Println("########### Appraisal Invoke ###########")
 	function, args := stub.GetFunctionAndParameters()
 	fmt.Println("function:" + function)
-	for _, a := range args {
-		fmt.Println("args:" + a)
+	for i, v := range args {
+        if i != 2 {
+		    fmt.Println("args:" + v)
+        }
 	}
 
 	if function != "invoke" {
