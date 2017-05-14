@@ -7,6 +7,7 @@
           <li class="tradeIP"><router-link to="/tradefrom">提交IP</router-link></li>
           <li><router-link to="/index">购买</router-link></li>
           <li v-if="userType=='org'"><router-link to="/entery">机构管理</router-link></li>
+          <li><router-link to="/banquan">版权查询</router-link></li>
         </ul>
         <ul class="right">
           <li class="tuichu" @click="goout()">退出</li>
