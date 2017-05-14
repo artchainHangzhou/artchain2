@@ -2,7 +2,22 @@
   <div class="headerindex">
   <div class="zhezhao" v-show="zhezhao"></div>
     <header class="index-header">
-      <ul v-show="!logintue">
+    <div class="user-con">
+      <ul class="left">
+        <li class="mybutton"><router-link to="/user">我的账户</router-link></li>
+        <li ><router-link to="/tradefrom">提交IP</router-link></li>
+        <li><router-link to="/index">购买</router-link></li>
+        <li><router-link to="/banquan">版权查询</router-link></li>
+        <!-- <li><router-link to="/entery">机构管理</router-link></li> -->
+      </ul>
+      <ul class="right">
+        <li class="tuichu" @click="goout()">退出</li>
+        <li class="name">
+          <p>你好:{{userName}}</p>
+        </li>
+      </ul>
+    </div>
+      <!-- <ul v-show="!logintue">
         <li @click="registerdialog()">注册</li>
         <li @click="logindialog()">登录</li>
         <li @click="entrylogindialog()">机构登录</li>
@@ -14,10 +29,23 @@
           <li class="name">
             <p>你好:{{userName}}</p>
           </li>
-        </ul>
+        </ul> -->
     </header>
     <div class="index-content">
-      <div class="index-con1"><span>在线IP许可权</span></div>
+    <el-upload class='wenjian'
+        :action='imgurl+"search"'
+        type="drag"
+        :thumbnail-mode="false"
+        name="uploadfile"
+        :on-preview="handlePreview"
+        :on-remove="handleRemove1"
+        :on-success="uploadsuccess"
+        :default-file-list="fileList"
+        >
+        <i class="el-icon-upload"></i>
+        <div class="el-dragger__text">将律师意见书拖到此处，或<em>点击上传</em></div>
+      </el-upload>
+      <div class="index-con1"><span>版权查询</span></div>
       <div class="table1">
         <table>
           <thead>
@@ -138,6 +166,8 @@ export default {
   // name: 'hello',
   data () {
     return {
+      fileList: [],
+      imgurl:'',
       apiurl:'',
       userType:'',
       userName:'',
@@ -175,8 +205,9 @@ export default {
   },
   mounted: function() {
     this.$nextTick(() => {
-      this.IpList();
+      // this.IpList();
       this.apiurl=api.curl;
+      this.imgurl=api.curl;
       if(sessionStorage.userId){
         this.userName=sessionStorage.userId
         this.logintue=true;
@@ -185,6 +216,23 @@ export default {
     })
   },
   methods:{
+    handlePreview(){},
+    handleRemove1(file, fileList) {
+        $('.wenjian .el-dragger').show();
+      },
+      uploadsuccess(response){
+        // console.log(response.data);
+        this.AllIpList=JSON.parse(response.data);
+        this.pageIpList=this.AllIpList.slice(0,5);
+        this.ipListLength=this.AllIpList.length;
+        // this.IpList(response.data)
+        // this.tradefrom.proposalUrl=response.data;
+        $('.wenjian .el-dragger').hide();
+      },
+      imgupload(response){
+        this.tradefrom.pictureUrl=response.data;
+        $('.imgs .el-dragger').hide();
+      },
     registerdialog(){
       this.close();
       this.regrist=true;
@@ -264,9 +312,9 @@ export default {
     },
     goout(){
       sessionStorage.clear();
-      this.userName='';
-      this.userType='';
-      this.logintue=false;
+      this.$router.push({
+        path: '/index'
+      });
     },
     login(){
       var userid=this.userId;
@@ -363,13 +411,16 @@ export default {
       }
      });
     },
-    IpList(){
+    IpList(upload){
       var _this=this;
      $.ajax({
       type:"POST",
-      url:api.curl+'queryIPList',
+      url:api.curl+'search',
       dataType:'json',
-      data:'',
+      headers:{
+        'Content-Type' : 'multipart/form-data',
+      },
+      data:'uploadfile='+upload,
       success:function(data){
         // var response=JSON.parse(data.data);
         _this.AllIpList=JSON.parse(data.data);
@@ -433,6 +484,7 @@ a {
       right: 10px;
     }
     .tromcontent{
+
       .fromtitle{
         width: 320px;
         margin: 25px auto 0;
@@ -514,52 +566,75 @@ a {
     }
   }
   .index-header{
-    width: 100%;
-    height: 60px;
-    background: #4778c7;
-    ul{
-      width: 1200px;
-      margin: 0 auto!important;
+     width: 100%;
       height: 60px;
-      padding-top: 12px;
-      li{
-        float: right;
-        width: 100px;
-        height: 35px;
-        line-height: 35px;
-        border:1px solid #8faddd;
-        border-radius: 3px;
-        color: #fff;
-        font-size: 14px;
-        cursor: pointer;
-        a{
-          display: inline-block;
-          height: 100%;
-          width: 100%;
-        }
+      background: #4778c7;
+      .user-con{
+        width: 1200px;
+        margin: 0 auto;
       }
-      li:hover{
-        background: #fff;
-        color: #4778c7;
-      }
-      .name{
-        border:0;
-        p{
-          margin: 0;
-          padding: 0;
+      ul{
+        width: 600px;
+        margin: 0 auto;
+        height: 60px;
+        /*padding-top: 20px;*/
+        li{
+          /*float: right;*/
+          width: 100px;
+          height: 35px;
+          margin-top: 12px;
           line-height: 35px;
+          border:1px solid #8faddd;
+          border-radius: 3px;
+          color: #fff;
+          font-size: 14px;
+          cursor: pointer;
+          a{
+            display: inline-block;
+            width: 100%;
+            height: 100%;
+            color: #fff;
+          }
+        }
+        .tuichu:hover{
+          background: #fff;
+          color: #4778c7!important;
         }
       }
-      .name:hover{
-        background: #4778c7;
-        color: #fff;
+      .left{
+        float: left;
+        li{
+          float: left;
+        }
+        .mybutton{
+          background: #fff;
+          a{
+            color: #4778c7!important;
+          }
+        } 
       }
-    }
+      .right{
+        float: right;
+        li{
+          float: right;
+        }
+        .name{
+          border:0;
+          p{
+            margin: 0;
+            padding: 0;
+            line-height: 35px;
+          }
+        }
+      }
   }
   .index-content{
     width: 1200px;
     height: 800px;
     margin:0 auto;
+    .el-upload{
+      margin: 20px auto;
+    }
     .index-con1{
       width: 1200px;
       height: 40px;

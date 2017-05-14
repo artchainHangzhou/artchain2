@@ -6,6 +6,7 @@
         <li class="mybutton"><router-link to="/user">我的账户</router-link></li>
         <li ><router-link to="/tradefrom">提交IP</router-link></li>
         <li><router-link to="/index">购买</router-link></li>
+        <li><router-link to="/banquan">版权查询</router-link></li>
         <!-- <li><router-link to="/entery">机构管理</router-link></li> -->
       </ul>
       <ul class="right">
@@ -22,7 +23,7 @@
         <thead>
           <tr>
             <th>原作名称</th>
-            <th>商品字代码</th>
+            <th>商品子代码</th>
             <th>成交时间</th>
             <th>价格</th>
           </tr>
@@ -30,7 +31,7 @@
         <tbody>
           <tr v-for="item in pagecaozuoList">
             <td>{{item.ipName}}</td>
-            <td>{{item.subId}}</td>
+            <td>{{item.ipId}}</td>
             <td>{{item.updateTime}}</td>
             <td>{{item.price}}</td>
           </tr>
@@ -51,7 +52,7 @@
         <thead>
           <tr>
             <th>原作名称</th>
-            <th>商品字代码</th>
+            <th>商品子代码</th>
             <th>成交时间</th>
             <th>价格</th>
           </tr>
@@ -59,7 +60,7 @@
         <tbody>
           <tr v-for="item in pageallMyIpList">
             <td>{{item.ipName}}</td>
-            <td>{{item.subId}}</td>
+            <td>{{item.ipId}}</td>
             <td>{{item.updateTime}}</td>
             <td>{{item.Price}}</td>
           </tr>

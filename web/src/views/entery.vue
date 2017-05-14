@@ -22,7 +22,7 @@
         <thead>
           <tr>
             <th>原作名称</th>
-            <th>商品字代码</th>
+            <th>商品子代码</th>
             <th>成交时间</th>
             <th>价格</th>
           </tr>
@@ -30,7 +30,7 @@
         <tbody>
           <tr v-for="item in caozuoList">
             <td>{{item.ipName}}</td>
-            <td>{{item.subId}}</td>
+            <td>{{item.ipId}}</td>
             <td>{{item.updateTime}}</td>
             <td>{{item.price}}</td>
           </tr>

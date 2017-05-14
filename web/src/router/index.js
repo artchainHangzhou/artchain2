@@ -7,6 +7,7 @@ import Index from 'views/index'
 import ifcont from 'views/userconten'
 import tradefrom from 'views/tradefrom'
 import entery from 'views/entery'
+import banquan from 'views/banquan'
 
 export default new Router({
   routes: [
@@ -29,6 +30,9 @@ export default new Router({
     {
       path: '/entery',
       component: entery
+    },{
+      path: '/banquan',
+      component: banquan
     }
   ]
 })
