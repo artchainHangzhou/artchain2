@@ -525,12 +525,6 @@ func (t *SimpleChaincode) buy(stub shim.ChaincodeStubInterface, args []string) p
         return shim.Error("buy GetIP:" + err.Error())
     }
 
-    seller, err := t.GetUser(stub, "User:" + ip.Owner)
-    if err != nil {
-        fmt.Println("buy GetUser:", err.Error())
-        return shim.Error("buy GetUser:" + err.Error())
-    }
-
     if buyers.Coin < int64(FeeAmt) + int64(ip.Price) {
         fmt.Println("user coin is too low:", strconv.FormatInt(buyers.Coin, 10))
         return shim.Error("user coin is too low:" + strconv.FormatInt(buyers.Coin, 10))
@@ -542,6 +536,12 @@ func (t *SimpleChaincode) buy(stub shim.ChaincodeStubInterface, args []string) p
     if err != nil {
         fmt.Println("buy PutUser:", err.Error())
         return shim.Error("buy PutUser:" + err.Error())
+    }
+
+    seller, err := t.GetUser(stub, "User:" + ip.Owner)
+    if err != nil {
+        fmt.Println("buy GetUser:", err.Error())
+        return shim.Error("buy GetUser:" + err.Error())
     }
 
     seller.Coin += ip.Price
