@@ -2,6 +2,7 @@
   <div class="headerindex">
   <div class="zhezhao" v-show="zhezhao"></div>
     <header class="index-header">
+    <span class="titlelist">ArtChain艺术品版权交易</span>
       <ul v-show="!logintue">
         <li @click="registerdialog()">注册</li>
         <li @click="logindialog()">登录</li>
@@ -517,6 +518,12 @@ a {
     width: 100%;
     height: 60px;
     background: #4778c7;
+    .titlelist{
+      float: left;
+      line-height: 60px;
+      color: #fff;
+      padding-left: 30px;
+    }
     ul{
       width: 1200px;
       margin: 0 auto!important;
