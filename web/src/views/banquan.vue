@@ -4,10 +4,10 @@
     <header class="index-header">
     <div class="user-con">
       <ul class="left">
-        <li class="mybutton"><router-link to="/user">我的账户</router-link></li>
+        <li><router-link to="/user">我的账户</router-link></li>
         <li ><router-link to="/tradefrom">提交IP</router-link></li>
         <li><router-link to="/index">购买</router-link></li>
-        <li><router-link to="/banquan">版权查询</router-link></li>
+        <li class="mybutton"><router-link to="/banquan">版权查询</router-link></li>
         <!-- <li><router-link to="/entery">机构管理</router-link></li> -->
       </ul>
       <ul class="right">
@@ -43,7 +43,7 @@
         :default-file-list="fileList"
         >
         <i class="el-icon-upload"></i>
-        <div class="el-dragger__text">将律师意见书拖到此处，或<em>点击上传</em></div>
+        <div class="el-dragger__text">将版权图样拖到此处，或<em>点击上传</em></div>
       </el-upload>
       <div class="index-con1"><span>版权查询</span></div>
       <div class="table1">
